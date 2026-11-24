@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tính kết quả bầu chọn xếp hạng (RCV)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>Tính kết quả bầu chọn xếp hạng</h1>
+    <p class="sub">Ranked Choice Voting, phương pháp Schulze. Mọi tính toán chạy ngay trong trình duyệt, không gửi dữ liệu đi đâu.</p>
+  </header>
+
+  <section class="card">
+    <h2>1. Nhập phiếu bầu</h2>
+    <p class="hint">Mỗi dòng là một phiếu, xếp ứng viên từ thích nhất đến ít thích nhất, ngăn cách bằng <code>&gt;</code> hoặc dấu phẩy.
+      Dùng <code>=</code> cho các ứng viên ngang hạng. Để ghi nhiều phiếu giống nhau, thêm số ở đầu, ví dụ <code>12: An &gt; Bình</code>. Dòng bắt đầu bằng <code>#</code> được bỏ qua.</p>
+    <textarea id="ballots" rows="12" spellcheck="false" placeholder="An > Bình > Chi"></textarea>
+    <div class="row">
+      <label class="file">Tải tệp CSV/TXT <input type="file" id="file" accept=".csv,.txt,text/plain,text/csv"></label>
+      <button type="button" id="example" class="secondary">Dùng ví dụ mẫu</button>
+      <button type="button" id="clear" class="secondary">Xoá</button>
+      <button type="button" id="run">Tính kết quả</button>
+    </div>
+    <div id="errors" class="errors" hidden></div>
+  </section>
+
+  <section class="card" id="result" hidden>
+    <h2>2. Kết quả</h2>
+    <div id="summary"></div>
+    <div id="rounds"></div>
+  </section>
+
+  <section class="card about">
+    <h2>Cách tính</h2>
+    <ol>
+      <li>Với mỗi cặp ứng viên X và Y, đếm số người xếp X trên Y. Ứng viên không có trên phiếu được coi là xếp sau mọi ứng viên có trên phiếu.</li>
+      <li>X thắng Y trong đối đầu trực tiếp nếu số người thích X hơn Y lớn hơn số người thích Y hơn X.</li>
+      <li>Sức mạnh của một chuỗi X → A → … → Y là trận thắng yếu nhất trong chuỗi. Đường mạnh nhất từ X đến Y là chuỗi có sức mạnh lớn nhất.</li>
+      <li>X xếp trên Y nếu đường mạnh nhất từ X đến Y mạnh hơn đường từ Y đến X. Người thắng là người không bị ai xếp trên.</li>
+      <li>Nếu có ứng viên thắng tất cả mọi người khi đối đầu trực tiếp (người thắng Condorcet), Schulze luôn chọn người đó.</li>
+    </ol>
+  </section>
+  <footer>Mã nguồn mở, chạy hoàn toàn trên trình duyệt.</footer>
+</main>
+<script src="rcv.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
