@@ -1,6 +1,6 @@
 # Tính kết quả bầu chọn xếp hạng (RCV)
 
-Trang web tĩnh tính kết quả Ranked Choice Voting theo phương pháp Schulze. Chạy hoàn toàn trên trình duyệt, không cần máy chủ, dùng được trên GitHub Pages. Giao diện có tiếng Việt, Anh, Nhật và Trung (bản dịch nằm trong `i18n.js`).
+Trang web tĩnh tính kết quả Ranked Choice Voting theo phương pháp Schulze. Chạy hoàn toàn trên trình duyệt, không cần máy chủ, dùng được trên GitHub Pages. Giao diện có tiếng Việt, Anh, Nhật, Trung, Hàn và Indonesia (bản dịch nằm trong `i18n.js`).
 
 ## Định dạng phiếu
 
