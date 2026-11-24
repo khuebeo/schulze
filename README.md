@@ -6,12 +6,12 @@ Trang web tĩnh tính kết quả Ranked Choice Voting theo phương pháp Schul
 
 ```
 An > Bình > Chi
-12: Bình > An
+Japan: Bình > An
 Chi, An
 An > Bình = Chi
 ```
 
-Mỗi dòng là một phiếu. `12:` ở đầu dòng nghĩa là 12 phiếu giống nhau. Dòng bắt đầu bằng `#` là chú thích. Dấu `=` nghĩa là ngang hạng.
+Mỗi dòng là đúng một phiếu. Phần trước dấu `:` ở đầu dòng (ví dụ `Japan:`) là tên người bầu, không bắt buộc và không ảnh hưởng kết quả. Dòng bắt đầu bằng `#` là chú thích. Dấu `=` nghĩa là ngang hạng.
 
 ## Đăng lên GitHub Pages
 

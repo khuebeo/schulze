@@ -2,7 +2,7 @@
 (function (root) {
   "use strict";
 
-  // Đọc văn bản phiếu bầu. Mỗi dòng là một phiếu (hoặc nhóm phiếu giống nhau):
+  // Đọc văn bản phiếu bầu. Mỗi dòng là đúng một phiếu:
   //   A > B > C
   //   Japan: B > A       (tên người bầu ở đầu dòng, không bắt buộc)
   //   A, C, B            (dấu phẩy cũng được)
