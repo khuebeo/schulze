@@ -25,13 +25,13 @@
           const name = piece.trim();
           if (!name) continue;
           const key = name.toLocaleLowerCase();
-          if (seen.has(key)) { errors.push(`Dòng ${i + 1}: "${name}" xuất hiện nhiều lần, chỉ tính lần đầu.`); continue; }
+          if (seen.has(key)) { errors.push({ code: "duplicate", line: i + 1, name }); continue; }
           seen.add(key);
           group.push(name);
         }
         if (group.length) ranking.push(group);
       }
-      if (ranking.length === 0) { errors.push(`Dòng ${i + 1}: phiếu trống, bỏ qua.`); return; }
+      if (ranking.length === 0) { errors.push({ code: "empty", line: i + 1 }); return; }
       if (count > 0) ballots.push({ ranking, count });
     });
     return { ballots, errors };
