@@ -42,7 +42,7 @@ r = runSchulze(p.ballots); assert.deepStrictEqual(r.winners, ["B"]); assert.stri
 // 7. Placeholder trong i18n.js phải đọc được và không có lỗi
 {
   const src = require("fs").readFileSync(__dirname + "/i18n.js", "utf8");
-  const ph = JSON.parse(src.match(/placeholder: ("[^"]*")/)[1]);
+  const ph = JSON.parse(src.match(/const EXAMPLE = ("[^"]*")/)[1]);
   const q2 = parseBallots(ph); assert.strictEqual(q2.errors.length, 0); assert.strictEqual(q2.ballots.length, 6);
   assert.strictEqual(runSchulze(q2.ballots).candidates.length, 6);
 }

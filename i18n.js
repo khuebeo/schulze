@@ -2,10 +2,8 @@
 (function (root) {
   "use strict";
 
-  // Ví dụ mẫu dùng cùng một bộ phiếu (ví dụ 45 phiếu trên Wikipedia), chỉ đổi tên món ăn.
-  const PATTERN = [[5, "ACBED"], [5, "ADECB"], [8, "BEDAC"], [3, "CABED"], [7, "CAEBD"], [2, "CBADE"], [7, "DCEBA"], [8, "EBADC"]];
-  const makeExample = (comment, names) => [comment].concat(PATTERN.flatMap(([n, s]) =>
-    Array(n).fill([...s].map((c) => names["ABCDE".indexOf(c)]).join(" > ")))).join("\n");
+  // Ví dụ dùng chung cho placeholder và nút "Dùng ví dụ mẫu" ở mọi ngôn ngữ.
+  const EXAMPLE = "Japan: sushi > gimbab > sashimi = pho > pizza = spaghetti\nVietnam: sushi = gimbab > sashimi > pho > spaghetti > pizza\nTaiwan: sushi > gimbab > sashimi > pho > pizza > spaghetti\nKorea: gimbab > sushi > pho > sashimi > spaghetti > pizza\nIndonesia: pho > sushi = gimbab > pizza > spaghetti > sashimi\nThailand: pho > sushi > gimbab > sashimi > spaghetti > pizza";
 
   const STRINGS = {
     vi: {
@@ -15,7 +13,7 @@
       sub: "Ranked Choice Voting, phương pháp Schulze. Mọi tính toán chạy ngay trong trình duyệt, không gửi dữ liệu đi đâu.",
       inputTitle: "1. Nhập phiếu bầu",
       hint: "Mỗi dòng là một phiếu, xếp ứng viên từ thích nhất đến ít thích nhất, ngăn cách bằng <code>&gt;</code> hoặc dấu phẩy. Dùng <code>=</code> cho các ứng viên ngang hạng. Có thể ghi tên người bầu ở đầu dòng, ví dụ <code>Japan: sushi &gt; pho</code>. Dòng bắt đầu bằng <code>#</code> được bỏ qua.",
-      placeholder: "Japan: sushi > gimbab > sashimi = pho > pizza = spaghetti\nVietnam: sushi = gimbab > sashimi > pho > spaghetti > pizza\nTaiwan: sushi > gimbab > sashimi > pho > pizza > spaghetti\nKorea: gimbab > sushi > pho > sashimi > spaghetti > pizza\nIndonesia: pho > sushi = gimbab > pizza > spaghetti > sashimi\nThailand: pho > sushi > gimbab > sashimi > spaghetti > pizza",
+      placeholder: EXAMPLE,
       upload: "Tải tệp CSV/TXT", example: "Dùng ví dụ mẫu", clear: "Xoá", run: "Tính kết quả",
       resultTitle: "2. Kết quả",
       winner: "🏆 Người thắng: {name}",
@@ -43,7 +41,7 @@
         "Nếu có ứng viên thắng tất cả mọi người khi đối đầu trực tiếp (người thắng Condorcet), Schulze luôn chọn người đó.",
       ],
       footer: "Mã nguồn mở, chạy hoàn toàn trên trình duyệt.",
-      exampleText: makeExample("# Ví dụ: 45 người chọn món ăn trưa", ["Phở", "Bún chả", "Cơm tấm", "Hủ tiếu", "Bánh mì"]),
+      exampleText: EXAMPLE,
     },
     en: {
       langName: "English",
@@ -52,7 +50,7 @@
       sub: "Computes results with the Schulze method. Everything runs in your browser; no data is sent anywhere.",
       inputTitle: "1. Enter ballots",
       hint: "One ballot per line, listing candidates from most to least preferred, separated by <code>&gt;</code> or commas. Use <code>=</code> for candidates ranked equally. You can put a voter name in front, e.g. <code>Japan: sushi &gt; pho</code>. Lines starting with <code>#</code> are ignored.",
-      placeholder: "Japan: sushi > gimbab > sashimi = pho > pizza = spaghetti\nVietnam: sushi = gimbab > sashimi > pho > spaghetti > pizza\nTaiwan: sushi > gimbab > sashimi > pho > pizza > spaghetti\nKorea: gimbab > sushi > pho > sashimi > spaghetti > pizza\nIndonesia: pho > sushi = gimbab > pizza > spaghetti > sashimi\nThailand: pho > sushi > gimbab > sashimi > spaghetti > pizza",
+      placeholder: EXAMPLE,
       upload: "Load CSV/TXT file", example: "Load example", clear: "Clear", run: "Calculate",
       resultTitle: "2. Results",
       winner: "🏆 Winner: {name}",
@@ -80,7 +78,7 @@
         "If one candidate beats every other head-to-head (a Condorcet winner), Schulze always picks that candidate.",
       ],
       footer: "Open source, runs entirely in your browser.",
-      exampleText: makeExample("# Example: 45 people choose lunch", ["Pizza", "Tacos", "Sushi", "Pasta", "Burgers"]),
+      exampleText: EXAMPLE,
     },
     ja: {
       langName: "日本語",
@@ -89,7 +87,7 @@
       sub: "シュルツ方式で結果を計算します。計算はすべてブラウザ内で行われ、データはどこにも送信されません。",
       inputTitle: "1. 投票を入力",
       hint: "1行に1票、候補者を好きな順に <code>&gt;</code> またはカンマで区切って書きます。同順位の候補者は <code>=</code> でつなぎます。行頭に投票者名を付けることもできます（例: <code>Japan: sushi &gt; pho</code>）。<code>#</code> で始まる行は無視されます。",
-      placeholder: "Japan: sushi > gimbab > sashimi = pho > pizza = spaghetti\nVietnam: sushi = gimbab > sashimi > pho > spaghetti > pizza\nTaiwan: sushi > gimbab > sashimi > pho > pizza > spaghetti\nKorea: gimbab > sushi > pho > sashimi > spaghetti > pizza\nIndonesia: pho > sushi = gimbab > pizza > spaghetti > sashimi\nThailand: pho > sushi > gimbab > sashimi > spaghetti > pizza",
+      placeholder: EXAMPLE,
       upload: "CSV/TXTを読み込む", example: "例を読み込む", clear: "クリア", run: "集計する",
       resultTitle: "2. 結果",
       winner: "🏆 当選: {name}",
@@ -117,7 +115,7 @@
         "一対一で全員に勝つ候補者（コンドルセ勝者）がいれば、シュルツ方式は必ずその候補者を選びます。",
       ],
       footer: "オープンソース。すべてブラウザ内で動作します。",
-      exampleText: makeExample("# 例: 45人が昼食を選ぶ", ["寿司", "ラーメン", "カレー", "うどん", "天ぷら"]),
+      exampleText: EXAMPLE,
     },
     zh: {
       langName: "中文",
@@ -126,7 +124,7 @@
       sub: "使用舒尔茨方法计算结果。所有计算都在浏览器中完成，不会发送任何数据。",
       inputTitle: "1. 输入选票",
       hint: "每行一张选票，按从最喜欢到最不喜欢的顺序列出候选人，用 <code>&gt;</code> 或逗号分隔。并列的候选人用 <code>=</code> 连接。也可以在行首写上投票人名称，例如 <code>Japan: sushi &gt; pho</code>。以 <code>#</code> 开头的行会被忽略。",
-      placeholder: "Japan: sushi > gimbab > sashimi = pho > pizza = spaghetti\nVietnam: sushi = gimbab > sashimi > pho > spaghetti > pizza\nTaiwan: sushi > gimbab > sashimi > pho > pizza > spaghetti\nKorea: gimbab > sushi > pho > sashimi > spaghetti > pizza\nIndonesia: pho > sushi = gimbab > pizza > spaghetti > sashimi\nThailand: pho > sushi > gimbab > sashimi > spaghetti > pizza",
+      placeholder: EXAMPLE,
       upload: "导入 CSV/TXT 文件", example: "载入示例", clear: "清空", run: "计算结果",
       resultTitle: "2. 结果",
       winner: "🏆 胜出者：{name}",
@@ -154,7 +152,7 @@
         "如果有候选人在两两对决中胜过所有其他人（孔多塞胜者），舒尔茨方法一定会选出该候选人。",
       ],
       footer: "开源项目，完全在浏览器中运行。",
-      exampleText: makeExample("# 示例：45 人选择午餐", ["饺子", "火锅", "烤鸭", "面条", "包子"]),
+      exampleText: EXAMPLE,
     },
   };
 
