@@ -51,7 +51,15 @@
         const n = res.d[i][j], v = { n, u: res.candidates[i], v: res.candidates[j] };
         return n === 1 && I18N.has("pairTip1") ? t("pairTip1", v) : t("pairTip", v);
       }) +
-      `<h3>${esc(t("pathsTitle"))}</h3><p class="note">${esc(t("pathsNote"))}</p>` + matrix(res, res.p);
+      `<h3>${esc(t("pathsTitle"))}</h3><p class="note">${esc(t("pathsNote"))}</p>` + matrix(res, res.p, (i, j) => {
+        const u = res.candidates[i], v = res.candidates[j], pth = res.path(i, j);
+        if (!pth) return t("pathNone", { u, v });
+        // Cạnh yếu nhất của đường đi (lấy cạnh đầu tiên nếu có nhiều cạnh bằng nhau).
+        let w = 0;
+        for (let k = 1; k < pth.length - 1; k++) if (res.d[pth[k]][pth[k + 1]] < res.d[pth[w]][pth[w + 1]]) w = k;
+        return t("pathTip", { u, v, n: res.p[i][j], path: pth.map((c) => res.candidates[c]).join(" → "),
+          a: res.candidates[pth[w]], b: res.candidates[pth[w + 1]] });
+      });
     if (scroll) $("result").scrollIntoView({ behavior: "smooth", block: "start" });
   }
 

@@ -62,9 +62,21 @@
 
     // p[i][j] = sức mạnh của đường mạnh nhất từ i đến j (biến thể Floyd–Warshall)
     const p = zero();
-    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) if (i !== j && d[i][j] > d[j][i]) p[i][j] = d[i][j];
-    for (let k = 0; k < n; k++) for (let i = 0; i < n; i++) if (i !== k) for (let j = 0; j < n; j++)
-      if (j !== i && j !== k) p[i][j] = Math.max(p[i][j], Math.min(p[i][k], p[k][j]));
+    // nxt[i][j] = bước kế tiếp sau i trên đường mạnh nhất từ i đến j (để dựng lại đường đi).
+    const nxt = Array.from({ length: n }, () => Array(n).fill(-1));
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) if (i !== j && d[i][j] > d[j][i]) { p[i][j] = d[i][j]; nxt[i][j] = j; }
+    for (let k = 0; k < n; k++) for (let i = 0; i < n; i++) if (i !== k) for (let j = 0; j < n; j++) {
+      if (j === i || j === k) continue;
+      const via = Math.min(p[i][k], p[k][j]);
+      if (via > p[i][j]) { p[i][j] = via; nxt[i][j] = nxt[i][k]; }
+    }
+    // path(i, j) -> mảng chỉ số ứng viên từ i đến j, hoặc null nếu không có đường.
+    const path = (i, j) => {
+      if (nxt[i][j] < 0) return null;
+      const out = [i];
+      for (let c = i; c !== j && out.length <= n; ) { c = nxt[c][j]; out.push(c); }
+      return out;
+    };
 
     // Xếp hạng: i đứng trên j nếu p[i][j] > p[j][i] (quan hệ này có tính bắc cầu).
     const beats = names.map((_, i) => names.reduce((s, _, j) => s + (i !== j && p[i][j] > p[j][i] ? 1 : 0), 0));
@@ -82,7 +94,7 @@
     let condorcet = null;
     for (let i = 0; i < n; i++) if (names.every((_, j) => j === i || d[i][j] > d[j][i])) condorcet = names[i];
 
-    return { candidates: names, order: order.map((i) => names[i]), orderIdx: order, totalBallots, d, p, ranking: rankingOut, winners, condorcet };
+    return { candidates: names, order: order.map((i) => names[i]), orderIdx: order, totalBallots, d, p, path, ranking: rankingOut, winners, condorcet };
   }
 
   const api = { parseBallots, runSchulze };

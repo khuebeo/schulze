@@ -11,6 +11,14 @@ assert.deepStrictEqual(r.order, ["E", "A", "C", "B", "D"]);
 const I = (x) => r.candidates.indexOf(x);
 assert.strictEqual(r.d[I("A")][I("B")], 20); assert.strictEqual(r.p[I("E")][I("A")], 25); assert.strictEqual(r.p[I("A")][I("E")], 24);
 assert.strictEqual(r.condorcet, null);
+// Đường mạnh nhất E -> A là E -> D -> C -> A (25 = min(33? ...)); kiểm tra sức mạnh bằng cạnh yếu nhất
+for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) if (i !== j) {
+  const pth = r.path(i, j);
+  if (r.p[i][j] === 0) { assert.strictEqual(pth, null); continue; }
+  assert.strictEqual(pth[0], i); assert.strictEqual(pth[pth.length - 1], j);
+  const links = pth.slice(1).map((c, k) => r.d[pth[k]][c]);
+  assert.strictEqual(Math.min(...links), r.p[i][j]);
+}
 
 // 2. Có người thắng Condorcet
 r = run(expand(["3: A > B > C", "2: B > C > A", "2: C > B > A"]).join("\n"));
