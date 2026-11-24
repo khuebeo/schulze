@@ -9,13 +9,15 @@
   let last = null; // kết quả gần nhất, để vẽ lại khi đổi ngôn ngữ
 
   // Bảng ma trận, hàng/cột theo thứ tự xếp hạng. Ô xanh = hàng thắng cột.
-  function matrix(res, M) {
+  function matrix(res, M, tip) {
     const o = res.orderIdx;
     const head = o.map((j) => `<th>${esc(res.candidates[j])}</th>`).join("");
     const rows = o.map((i) => "<tr><th>" + esc(res.candidates[i]) + "</th>" + o.map((j) => {
       if (i === j) return '<td class="self">–</td>';
       const cls = M[i][j] > M[j][i] ? "w" : M[i][j] < M[j][i] ? "l" : "t";
-      return `<td class="${cls}">${M[i][j]}</td>`;
+      const tipText = tip ? tip(i, j) : "";
+      const attr = tipText ? ` data-tip="${esc(tipText)}" aria-label="${esc(tipText)}" tabindex="0"` : "";
+      return `<td class="${cls}"${attr}>${M[i][j]}</td>`;
     }).join("") + "</tr>").join("");
     return `<div class="scroll"><table class="matrix"><thead><tr><th></th>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
   }
@@ -26,6 +28,7 @@
   }
 
   function render(scroll) {
+    hideTip();
     if (!last) return;
     const { res, errors } = last;
     const errBox = $("errors");
@@ -44,7 +47,10 @@
     $("rounds").innerHTML =
       `<h3>${esc(t("rankingTitle"))}</h3><ol class="ranking">` +
       res.ranking.map((g) => `<li value="${g.place}">${esc(g.names.join(" = "))}</li>`).join("") + "</ol>" +
-      `<h3>${esc(t("pairwiseTitle"))}</h3><p class="note">${esc(t("pairwiseNote"))}</p>` + matrix(res, res.d) +
+      `<h3>${esc(t("pairwiseTitle"))}</h3><p class="note">${esc(t("pairwiseNote"))}</p>` + matrix(res, res.d, (i, j) => {
+        const n = res.d[i][j], v = { n, u: res.candidates[i], v: res.candidates[j] };
+        return n === 1 && I18N.has("pairTip1") ? t("pairTip1", v) : t("pairTip", v);
+      }) +
       `<h3>${esc(t("pathsTitle"))}</h3><p class="note">${esc(t("pathsNote"))}</p>` + matrix(res, res.p);
     if (scroll) $("result").scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -68,6 +74,30 @@
     $("lang").value = I18N.lang;
     render(false);
   }
+
+  // Chú thích khi di chuột (máy tính) hoặc chạm (điện thoại) vào ô có data-tip.
+  const tipBox = document.createElement("div");
+  tipBox.className = "tip"; tipBox.hidden = true; tipBox.setAttribute("role", "tooltip");
+  document.body.appendChild(tipBox);
+  let tipFor = null;
+  function showTip(cell) {
+    tipFor = cell;
+    tipBox.textContent = cell.dataset.tip;
+    tipBox.hidden = false;
+    const r = cell.getBoundingClientRect(), b = tipBox.getBoundingClientRect();
+    const left = Math.min(Math.max(8, r.left + r.width / 2 - b.width / 2), document.documentElement.clientWidth - b.width - 8);
+    const top = r.top - b.height - 8 < 0 ? r.bottom + 8 : r.top - b.height - 8;
+    tipBox.style.left = left + window.scrollX + "px";
+    tipBox.style.top = top + window.scrollY + "px";
+  }
+  function hideTip() { tipBox.hidden = true; tipFor = null; }
+  const cellOf = (e) => e.target.closest && e.target.closest("td[data-tip]");
+  document.addEventListener("pointerover", (e) => { const c = cellOf(e); if (c && e.pointerType === "mouse") showTip(c); });
+  document.addEventListener("pointerout", (e) => { const c = cellOf(e); if (c && e.pointerType === "mouse" && !c.contains(e.relatedTarget)) hideTip(); });
+  document.addEventListener("click", (e) => { const c = cellOf(e); if (c) { c === tipFor && tipBox.hidden === false ? hideTip() : showTip(c); } else hideTip(); });
+  document.addEventListener("focusin", (e) => { const c = cellOf(e); if (c) showTip(c); });
+  document.addEventListener("focusout", (e) => { if (cellOf(e)) hideTip(); });
+  window.addEventListener("resize", hideTip);
 
   $("lang").innerHTML = I18N.languages.map((l) => `<option value="${l.code}">${esc(l.name)}</option>`).join("");
   $("lang").addEventListener("change", (e) => { I18N.set(e.target.value); applyLanguage(); });

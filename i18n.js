@@ -24,7 +24,8 @@
       condorcetYes: "{name} là người thắng Condorcet", condorcetNo: "không có người thắng Condorcet",
       rankingTitle: "Bảng xếp hạng",
       pairwiseTitle: "Đối đầu trực tiếp",
-      pairwiseNote: "Mỗi ô là số người thích ứng viên ở hàng hơn ứng viên ở cột.",
+      pairwiseNote: "Mỗi ô là số người thích ứng viên ở hàng hơn ứng viên ở cột. Di chuột hoặc chạm vào ô để xem giải thích.",
+      pairTip: "{n} người xếp {u} trên {v}",
       pathsTitle: "Đường mạnh nhất",
       pathsNote: "Mỗi ô là sức mạnh đường mạnh nhất từ hàng đến cột. Ô xanh nghĩa là hàng được xếp trên cột.",
       errDuplicate: "Dòng {line}: \"{name}\" xuất hiện nhiều lần, chỉ tính lần đầu.",
@@ -58,7 +59,8 @@
       condorcetYes: "{name} is the Condorcet winner", condorcetNo: "no Condorcet winner",
       rankingTitle: "Ranking",
       pairwiseTitle: "Head-to-head results",
-      pairwiseNote: "Each cell is the number of voters who prefer the row candidate over the column candidate.",
+      pairwiseNote: "Each cell is the number of voters who prefer the row candidate over the column candidate. Hover over or tap a cell for details.",
+      pairTip: "{n} voters rank {u} above {v}", pairTip1: "1 voter ranks {u} above {v}",
       pathsTitle: "Strongest paths",
       pathsNote: "Each cell is the strength of the strongest path from the row to the column. A green cell means the row ranks above the column.",
       errDuplicate: "Line {line}: \"{name}\" appears more than once; only the first is counted.",
@@ -92,7 +94,8 @@
       condorcetYes: "{name}はコンドルセ勝者です", condorcetNo: "コンドルセ勝者はいません",
       rankingTitle: "順位",
       pairwiseTitle: "一対一の比較",
-      pairwiseNote: "各セルは、行の候補者を列の候補者より好む投票者の数です。",
+      pairwiseNote: "各セルは、行の候補者を列の候補者より好む投票者の数です。セルにマウスを重ねるかタップすると説明が表示されます。",
+      pairTip: "{n}人が{u}を{v}より上位にしています",
       pathsTitle: "最強経路",
       pathsNote: "各セルは、行から列への最強経路の強さです。緑のセルは行の候補者が列の候補者より上位であることを示します。",
       errDuplicate: "{line}行目: 「{name}」が複数回出てきます。最初のものだけを数えます。",
@@ -126,7 +129,8 @@
       condorcetYes: "{name} 是孔多塞胜者", condorcetNo: "没有孔多塞胜者",
       rankingTitle: "排名",
       pairwiseTitle: "两两对决",
-      pairwiseNote: "每个单元格表示偏好行候选人胜过列候选人的选民人数。",
+      pairwiseNote: "每个单元格表示偏好行候选人胜过列候选人的选民人数。将鼠标悬停或点按单元格可查看说明。",
+      pairTip: "{n} 名选民把 {u} 排在 {v} 之前",
       pathsTitle: "最强路径",
       pathsNote: "每个单元格表示从行到列的最强路径强度。绿色单元格表示行候选人排在列候选人之前。",
       errDuplicate: "第 {line} 行：“{name}”出现多次，只计算第一次。",
@@ -166,6 +170,7 @@
       lang = code;
       try { localStorage.setItem(KEY, code); } catch (e) { /* ignore */ }
     },
+    has(key) { return key in STRINGS[lang]; },
     // t("winner", { name: "An" }) -> chuỗi đã thay biến. Giá trị biến KHÔNG được escape ở đây.
     t(key, vars) {
       const s = STRINGS[lang][key] ?? STRINGS.vi[key];

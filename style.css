@@ -39,3 +39,6 @@ footer { text-align:center; font-size:.85rem; margin-top:24px; }
 code { background:var(--bg); padding:1px 4px; border-radius:4px; }
 .top { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:4px; }
 #lang { font:inherit; font-size:.95rem; padding:6px 8px; border-radius:6px; border:1px solid var(--line); background:var(--card); color:var(--text); }
+.matrix td[data-tip] { cursor:help; }
+.matrix td[data-tip]:hover, .matrix td[data-tip]:focus { outline:2px solid var(--accent); outline-offset:-2px; }
+.tip { position:absolute; z-index:10; max-width:280px; padding:6px 10px; border-radius:6px; font-size:.88rem; line-height:1.4; background:var(--text); color:var(--bg); box-shadow:0 2px 8px rgba(0,0,0,.2); pointer-events:none; }
