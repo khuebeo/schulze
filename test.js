@@ -43,8 +43,12 @@ r = runSchulze(p.ballots); assert.deepStrictEqual(r.winners, ["B"]); assert.stri
 {
   const src = require("fs").readFileSync(__dirname + "/i18n.js", "utf8");
   const ph = JSON.parse(src.match(/const EXAMPLE = ("[^"]*")/)[1]);
-  const q2 = parseBallots(ph); assert.strictEqual(q2.errors.length, 0); assert.strictEqual(q2.ballots.length, 6);
-  assert.strictEqual(runSchulze(q2.ballots).candidates.length, 6);
+  const q2 = parseBallots(ph); assert.strictEqual(q2.errors.length, 0); assert.strictEqual(q2.ballots.length, 8);
+  const r2 = runSchulze(q2.ballots);
+  assert.strictEqual(r2.candidates.length, 6); assert.deepStrictEqual(r2.winners, ["sushi"]); assert.strictEqual(r2.condorcet, null);
+  // Ví dụ phải có ít nhất một đường mạnh nhất đi qua ứng viên trung gian.
+  const C = (x) => r2.candidates.indexOf(x);
+  assert.deepStrictEqual(r2.path(C("sushi"), C("pho")).map((c) => r2.candidates[c]), ["sushi", "gimbab", "pho"]);
 }
 // 6. Nhãn người bầu
 const q = parseBallots("Japan: 1 > 2 > 3 = 4 > 5 = 6\nVietnam: 1 = 2 > 3 > 4 > 6 > 5\nTaiwan: 1 > 2 > 3 > 4 > 5 > 6");

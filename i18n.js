@@ -3,7 +3,7 @@
   "use strict";
 
   // Ví dụ dùng chung cho placeholder và nút "Dùng ví dụ mẫu" ở mọi ngôn ngữ.
-  const EXAMPLE = "Japan: sushi > gimbab > sashimi = pho > pizza = spaghetti\nVietnam: sushi = gimbab > sashimi > pho > spaghetti > pizza\nTaiwan: sushi > gimbab > sashimi > pho > pizza > spaghetti\nKorea: gimbab > sushi > pho > sashimi > spaghetti > pizza\nIndonesia: pho > sushi = gimbab > pizza > spaghetti > sashimi\nThailand: pho > sushi > gimbab > sashimi > spaghetti > pizza";
+  const EXAMPLE = "Japan: sushi > gimbab > sashimi = pho > pizza = spaghetti\nVietnam: sushi = gimbab > sashimi > pho > spaghetti > pizza\nTaiwan: sushi > gimbab > sashimi > pho > pizza > spaghetti\nKorea: gimbab > sushi > pho > sashimi > spaghetti > pizza\nIndonesia: pho > sushi = gimbab > pizza > spaghetti > sashimi\nThailand: pho > sushi > gimbab > sashimi > spaghetti > pizza\nMalaysia: gimbab > sashimi > pho > sushi > pizza > spaghetti\nPhilippines: sashimi > pho > sushi > gimbab > pizza > spaghetti";
 
   const STRINGS = {
     vi: {
