@@ -102,10 +102,15 @@
   const cellOf = (e) => e.target.closest && e.target.closest("td[data-tip]");
   document.addEventListener("pointerover", (e) => { const c = cellOf(e); if (c && e.pointerType === "mouse") showTip(c); });
   document.addEventListener("pointerout", (e) => { const c = cellOf(e); if (c && e.pointerType === "mouse" && !c.contains(e.relatedTarget)) hideTip(); });
-  document.addEventListener("click", (e) => { const c = cellOf(e); if (c) { c === tipFor && tipBox.hidden === false ? hideTip() : showTip(c); } else hideTip(); });
+  // Chạm/bấm vào ô luôn hiện chú thích (không bật/tắt), vì trên điện thoại sự kiện focus đến
+  // ngay trước click và trước đây click lại ẩn chú thích vừa hiện. Chạm ra ngoài để ẩn.
+  document.addEventListener("click", (e) => { const c = cellOf(e); if (c) showTip(c); else hideTip(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") hideTip(); });
   document.addEventListener("focusin", (e) => { const c = cellOf(e); if (c) showTip(c); });
-  document.addEventListener("focusout", (e) => { if (cellOf(e)) hideTip(); });
-  window.addEventListener("resize", hideTip);
+  document.addEventListener("focusout", (e) => { if (cellOf(e) && !(e.relatedTarget && cellOf({ target: e.relatedTarget }))) hideTip(); });
+  // Trên điện thoại, thanh địa chỉ ẩn/hiện khi cuộn cũng gây "resize"; chỉ ẩn khi bề ngang đổi.
+  let lastW = window.innerWidth;
+  window.addEventListener("resize", () => { if (window.innerWidth !== lastW) { lastW = window.innerWidth; hideTip(); } });
 
   $("lang").innerHTML = I18N.languages.map((l) => `<option value="${l.code}">${esc(l.name)}</option>`).join("");
   $("lang").addEventListener("change", (e) => { I18N.set(e.target.value); applyLanguage(); });
