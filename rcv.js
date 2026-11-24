@@ -4,7 +4,7 @@
 
   // Đọc văn bản phiếu bầu. Mỗi dòng là một phiếu (hoặc nhóm phiếu giống nhau):
   //   A > B > C
-  //   12: B > A          (12 phiếu giống nhau)
+  //   Japan: B > A       (tên người bầu ở đầu dòng, không bắt buộc)
   //   A, C, B            (dấu phẩy cũng được)
   //   A > B = C > D      (dấu = nghĩa là ngang hạng)
   function parseBallots(text) {
@@ -13,15 +13,10 @@
     String(text).split(/\r?\n/).forEach((raw, i) => {
       let line = raw.trim();
       if (!line || line.startsWith("#")) return;
-      let count = 1;
-      const m = line.match(/^(\d+)\s*[:x×*]\s*(.*)$/i);
+      // Nhãn tên người bầu ở đầu dòng, ví dụ "Japan: 1 > 2". Chỉ để hiển thị, không ảnh hưởng kết quả.
       let label = null;
-      if (m) { count = parseInt(m[1], 10); line = m[2].trim(); }
-      else {
-        // Nhãn tên người bầu ở đầu dòng, ví dụ "Japan: 1 > 2". Chỉ để hiển thị, không ảnh hưởng kết quả.
-        const lm = line.match(/^([^:>,;=\t]+?)\s*:\s*(.*)$/);
-        if (lm) { label = lm[1].trim(); line = lm[2].trim(); }
-      }
+      const lm = line.match(/^([^:>,;=\t]+?)\s*:\s*(.*)$/);
+      if (lm) { label = lm[1].trim(); line = lm[2].trim(); }
       const sep = line.includes(">") ? ">" : line.includes(",") ? "," : line.includes(";") ? ";" : line.includes("\t") ? "\t" : ">";
       const ranking = []; // mảng các nhóm ngang hạng
       const seen = new Set();
@@ -38,7 +33,7 @@
         if (group.length) ranking.push(group);
       }
       if (ranking.length === 0) { errors.push({ code: "empty", line: i + 1 }); return; }
-      if (count > 0) ballots.push(label ? { ranking, count, label } : { ranking, count });
+      ballots.push(label ? { ranking, count: 1, label } : { ranking, count: 1 });
     });
     return { ballots, errors };
   }
