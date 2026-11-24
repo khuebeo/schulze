@@ -30,4 +30,13 @@ assert.strictEqual(p.ballots.length, 2); assert.deepStrictEqual(p.ballots[0].ran
 assert.strictEqual(p.ballots[1].count, 2); assert.strictEqual(p.errors.length, 1);
 r = runSchulze(p.ballots); assert.deepStrictEqual(r.winners, ["B"]); assert.strictEqual(r.candidates.length, 2);
 
+// 6. Nhãn người bầu
+const q = parseBallots("Japan: 1 > 2 > 3 = 4 > 5 = 6\nVietnam: 1 = 2 > 3 > 4 > 6 > 5\nTaiwan: 1 > 2 > 3 > 4 > 5 > 6");
+assert.strictEqual(q.errors.length, 0); assert.strictEqual(q.ballots.length, 3);
+assert.strictEqual(q.ballots[0].label, "Japan"); assert.strictEqual(q.ballots[0].count, 1);
+assert.deepStrictEqual(q.ballots[0].ranking, [["1"], ["2"], ["3", "4"], ["5", "6"]]);
+assert.deepStrictEqual(q.ballots[1].ranking, [["1", "2"], ["3"], ["4"], ["6"], ["5"]]);
+r = runSchulze(q.ballots); assert.deepStrictEqual(r.winners, ["1"]); assert.strictEqual(r.candidates.length, 6);
+assert.strictEqual(parseBallots("12: A > B").ballots[0].count, 12);
+
 console.log("Tất cả kiểm thử đều qua.");
