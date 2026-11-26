@@ -22,6 +22,24 @@
     return `<div class="scroll"><table class="matrix"><thead><tr><th></th>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
   }
 
+  // [1,2,3,5,7,8] -> "1–3, 5, 7–8"
+  function lineList(lines) {
+    const parts = [];
+    for (let k = 0; k < lines.length; k++) {
+      let e = k;
+      while (e + 1 < lines.length && lines[e + 1] === lines[e] + 1) e++;
+      parts.push(e > k ? lines[k] + "–" + lines[e] : String(lines[k]));
+      k = e;
+    }
+    return parts.join(", ");
+  }
+
+  function warningText(w) {
+    if (w.code === "similar") return t("warnSimilar", { a: w.a, b: w.b, lines: lineList(w.lines) });
+    if (w.code === "rare") return t("warnRare", { name: w.name, line: w.line });
+    return t("warnIncomplete", { count: w.lines.length, missing: w.missing.join(", "), lines: lineList(w.lines) });
+  }
+
   function errorText(e) {
     if (typeof e === "string") return t(e);
     return t(e.code === "duplicate" ? "errDuplicate" : "errEmpty", { line: e.line, name: e.name });
@@ -31,6 +49,10 @@
     hideTip();
     if (!last) return;
     const { res, errors } = last;
+    const warnBox = $("warnings");
+    const warns = last.warnings || [];
+    warnBox.hidden = warns.length === 0;
+    warnBox.innerHTML = warns.length ? `<strong>${esc(t("warnTitle"))}</strong><ul>` + warns.map((w) => "<li>" + esc(warningText(w)) + "</li>").join("") + "</ul>" : "";
     const errBox = $("errors");
     errBox.hidden = errors.length === 0;
     errBox.innerHTML = errors.map((e) => "<div>" + esc(errorText(e)) + "</div>").join("");
@@ -68,7 +90,7 @@
     if (ballots.length === 0) { last = { res: null, errors: errors.concat(["errNoBallots"]) }; return render(); }
     const res = RCV.runSchulze(ballots);
     if (res.candidates.length < 2) errors.push("errFewCandidates");
-    last = { res, errors };
+    last = { res, errors, warnings: RCV.checkBallots(ballots) };
     render(true);
   }
 
@@ -116,7 +138,7 @@
   $("lang").addEventListener("change", (e) => { I18N.set(e.target.value); applyLanguage(); });
   $("run").addEventListener("click", run);
   $("example").addEventListener("click", () => { $("ballots").value = t("exampleText"); run(); });
-  $("clear").addEventListener("click", () => { $("ballots").value = ""; last = null; $("result").hidden = true; $("errors").hidden = true; });
+  $("clear").addEventListener("click", () => { $("ballots").value = ""; last = null; $("result").hidden = true; $("errors").hidden = true; $("warnings").hidden = true; });
   $("file").addEventListener("change", (e) => {
     const f = e.target.files[0];
     if (!f) return;

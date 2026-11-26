@@ -33,7 +33,7 @@
         if (group.length) ranking.push(group);
       }
       if (ranking.length === 0) { errors.push({ code: "empty", line: i + 1 }); return; }
-      ballots.push(label ? { ranking, count: 1, label } : { ranking, count: 1 });
+      ballots.push(label ? { ranking, count: 1, line: i + 1, label } : { ranking, count: 1, line: i + 1 });
     });
     return { ballots, errors };
   }
@@ -97,7 +97,62 @@
     return { candidates: names, order: order.map((i) => names[i]), orderIdx: order, totalBallots, d, p, path, ranking: rankingOut, winners, condorcet };
   }
 
-  const api = { parseBallots, runSchulze };
+  // Khoảng cách Levenshtein giữa hai chuỗi.
+  function editDistance(a, b) {
+    const m = a.length, n = b.length;
+    let prev = Array.from({ length: n + 1 }, (_, j) => j);
+    for (let i = 1; i <= m; i++) {
+      const cur = [i];
+      for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = cur;
+    }
+    return prev[n];
+  }
+
+  // Tìm các chỗ có thể nhập sai. Chỉ là cảnh báo, không ảnh hưởng kết quả.
+  //  - similar:    hai tên rất giống nhau (có thể gõ nhầm), ví dụ spaghetti / spaghetto
+  //  - rare:       tên chỉ xuất hiện trong đúng 1 phiếu (khi có từ 3 phiếu trở lên)
+  //  - incomplete: phiếu không xếp đủ mọi ứng viên; gộp các phiếu thiếu cùng những tên
+  function checkBallots(ballots) {
+    const warnings = [];
+    const display = new Map(), seenIn = new Map();
+    ballots.forEach((b) => b.ranking.flat().forEach((name) => {
+      const k = name.toLocaleLowerCase();
+      if (!display.has(k)) display.set(k, name);
+      if (!seenIn.has(k)) seenIn.set(k, []);
+      seenIn.get(k).push(b.line);
+    }));
+    const keys = [...display.keys()];
+
+    const flagged = new Set();
+    for (let x = 0; x < keys.length; x++) for (let y = x + 1; y < keys.length; y++) {
+      const a = keys[x], b = keys[y], len = Math.min(a.length, b.length);
+      if (len < 3) continue;
+      const limit = len >= 7 ? 2 : 1;
+      if (editDistance(a, b) > limit) continue;
+      // Đưa tên ít gặp hơn lên trước: đó thường là tên gõ nhầm.
+      const [r, c] = seenIn.get(a).length <= seenIn.get(b).length ? [a, b] : [b, a];
+      warnings.push({ code: "similar", a: display.get(r), b: display.get(c), lines: seenIn.get(r) });
+      flagged.add(r);
+    }
+    if (ballots.length >= 3) for (const k of keys) {
+      if (seenIn.get(k).length === 1 && !flagged.has(k)) warnings.push({ code: "rare", name: display.get(k), line: seenIn.get(k)[0] });
+    }
+
+    const groups = new Map();
+    for (const b of ballots) {
+      const have = new Set(b.ranking.flat().map((n) => n.toLocaleLowerCase()));
+      const missing = keys.filter((k) => !have.has(k));
+      if (!missing.length) continue;
+      const gk = missing.join("\u0000");
+      if (!groups.has(gk)) groups.set(gk, { code: "incomplete", missing: missing.map((k) => display.get(k)), lines: [] });
+      groups.get(gk).lines.push(b.line);
+    }
+    warnings.push(...groups.values());
+    return warnings;
+  }
+
+  const api = { parseBallots, runSchulze, checkBallots };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.RCV = api;
 })(this);

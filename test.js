@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { parseBallots, runSchulze } = require("./rcv.js");
+const { parseBallots, runSchulze, checkBallots } = require("./rcv.js");
 const run = (t) => runSchulze(parseBallots(t).ballots);
 
 // 1. Ví dụ kinh điển trên Wikipedia (45 phiếu, A..E) -> E > A > C > B > D
@@ -58,5 +58,23 @@ assert.deepStrictEqual(q.ballots[0].ranking, [["1"], ["2"], ["3", "4"], ["5", "6
 assert.deepStrictEqual(q.ballots[1].ranking, [["1", "2"], ["3"], ["4"], ["6"], ["5"]]);
 r = runSchulze(q.ballots); assert.deepStrictEqual(r.winners, ["1"]); assert.strictEqual(r.candidates.length, 6);
 const c = parseBallots("12: A > B").ballots[0]; assert.strictEqual(c.count, 1); assert.strictEqual(c.label, "12");
+
+// 8. Cảnh báo nhập sai: spaghetto
+{
+  const src = require("fs").readFileSync(__dirname + "/i18n.js", "utf8");
+  const ex = JSON.parse(src.match(/const EXAMPLE = ("[^"]*")/)[1]);
+  assert.deepStrictEqual(checkBallots(parseBallots(ex).ballots), []); // ví dụ chuẩn không có cảnh báo
+  const bad = ex.replace(/spaghetti$/, "spaghetto");
+  const w = checkBallots(parseBallots(bad).ballots);
+  assert.deepStrictEqual(w.find((x) => x.code === "similar"), { code: "similar", a: "spaghetto", b: "spaghetti", lines: [8] });
+  assert.ok(!w.some((x) => x.code === "rare")); // đã báo ở "similar" rồi
+  const inc = w.filter((x) => x.code === "incomplete");
+  assert.deepStrictEqual(inc.map((x) => [x.missing, x.lines]), [[["spaghetto"], [1, 2, 3, 4, 5, 6, 7]], [["spaghetti"], [8]]]);
+  // Tên lạ chỉ xuất hiện một lần, không giống tên nào
+  const w2 = checkBallots(parseBallots("A1 > Bob\nA1 > Bob\nA1 > Bob > Zed").ballots);
+  assert.ok(w2.some((x) => x.code === "rare" && x.name === "Zed" && x.line === 3));
+  // Tên ngắn khác nhau một ký tự không bị coi là gõ nhầm
+  assert.ok(!checkBallots(parseBallots("1 > 2\n2 > 1").ballots).some((x) => x.code === "similar"));
+}
 
 console.log("Tất cả kiểm thử đều qua.");
